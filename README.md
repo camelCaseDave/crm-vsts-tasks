@@ -30,3 +30,85 @@ Conditionally sets an SLA as being active and/or default. Can also retrieve busi
 Assigns all workflows in CRM to a given user.
 
 ## 2. Usage
+
+- Compile code in release mode.
+- Create an empty release task. See [Microsoft HowTo](https://docs.microsoft.com/en-us/vsts/extend/develop/add-build-task).
+
+How you execute the VstsExtensions.dll is your choice. This example uses PowerShell to deploy the export to file task:
+
+- In your tasks folder, add `ExportToFile.ps1`:
+
+```ps
+[CmdletBinding(DefaultParameterSetName = 'None')]
+param (
+    [String] [Parameter(Mandatory = $true)] 
+    $Connection,
+
+    [String] [Parameter(Mandatory = $true)]
+    $WorkingDirectory,
+
+    [String] [Parameter(Mandatory = $true)]
+    $FetchXml
+)
+
+$ScriptPath = Split-Path -parent $MyInvocation.MyCommand.Definition
+$ExtensionsPath = $ScriptPath + "\VstsExtensions.dll"
+$ExtensionsCorePath = $ScriptPath + "\VstsExtensions.Core.dll"
+
+Write-Verbose "Entering ExportToFile.ps1"
+Write-Verbose "Connection is $Connection"
+Write-Verbose "Working direcory is $WorkingDirectory"
+
+Get-ChildItem path -recurse
+
+Add-Type -Path $ExtensionsPath
+Add-Type -Path $ExtensionsCorePath
+
+$ExportToFile = New-Object -TypeName VstsExtensions.ExportToFile -ArgumentList $Connection, $WorkingDirectory, $FetchXml
+$ExportToFile.Run()
+
+Write-Verbose "Leaving ExportToFile.ps1"
+```
+
+- In your `task.json`, specify the input parameters:
+```js
+"inputs": [
+        {
+            "name": "Connection",
+            "type": "string",
+            "label": "Connection",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "CRM connection string"
+        },
+        {
+            "name": "WorkingDirectory",
+            "type": "string",
+            "label": "Working Directory",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Default working directory. Must match the directory used to read from when importing data to CRM."
+        },
+        {
+            "name": "FetchXml",
+            "type": "string",
+            "label": "FetchXml",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Query used to read data from CRM."
+        }
+    ]
+```
+Also specify your execution:
+```js
+"execution": {
+        "PowerShell": {
+            "target": "$(currentDirectory)\\ExportToFile.ps1",
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }
+```
+
+- Run your script locally to confirm it's working
+- Build your VSTS task with `tfx extension create --manifest-globs vss-extension.json`
+- Publish your extension to VSTS. See [Microsoft HowTo](https://docs.microsoft.com/en-us/vsts/extend/publish/overview).
