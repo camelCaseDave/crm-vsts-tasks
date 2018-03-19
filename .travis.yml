@@ -1,0 +1,8 @@
+language: csharp
+solution: VstsExtensions.sln
+install:
+  - nuget VstsExtensions.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release VstsExtensions.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./VstsExtensions.Tests/bin/Release/VstsExtensions.Tests.dll
