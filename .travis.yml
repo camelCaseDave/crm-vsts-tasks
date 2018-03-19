@@ -1,7 +1,7 @@
 language: csharp
 solution: VstsExtensions.sln
 install:
-  - nuget VstsExtensions.sln
+  - nuget restore VstsExtensions.sln
   - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release VstsExtensions.sln
