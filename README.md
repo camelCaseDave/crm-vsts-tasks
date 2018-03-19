@@ -34,7 +34,7 @@ Assigns all workflows in CRM to a given user.
 - Compile code in release mode.
 - Create an empty release task. See [Microsoft HowTo](https://docs.microsoft.com/en-us/vsts/extend/develop/add-build-task).
 
-How you execute the VstsExtensions.dll is your choice. This example uses PowerShell to deploy the export to file task:
+How you execute the VstsExtensions.dll is your choice. This example uses PowerShell to deploy the task  _"Export to file"_:
 
 - In your tasks folder, add `ExportToFile.ps1`:
 
@@ -70,45 +70,45 @@ $ExportToFile.Run()
 Write-Verbose "Leaving ExportToFile.ps1"
 ```
 
-- In your `task.json`, specify the input parameters:
+- In your `task.json`, specify input parameters:
 ```js
 "inputs": [
-        {
-            "name": "Connection",
-            "type": "string",
-            "label": "Connection",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "CRM connection string"
-        },
-        {
-            "name": "WorkingDirectory",
-            "type": "string",
-            "label": "Working Directory",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Default working directory. Must match the directory used to read from when importing data to CRM."
-        },
-        {
-            "name": "FetchXml",
-            "type": "string",
-            "label": "FetchXml",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Query used to read data from CRM."
-        }
-    ]
+    {
+        "name": "Connection",
+        "type": "string",
+        "label": "Connection",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "CRM connection string"
+    },
+    {
+        "name": "WorkingDirectory",
+        "type": "string",
+        "label": "Working Directory",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "Default working directory. Must match the directory used to read from when importing data to CRM."
+    },
+    {
+        "name": "FetchXml",
+        "type": "string",
+        "label": "FetchXml",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "Query used to read data from CRM."
+    }
+]
 ```
 Also specify your execution:
 ```js
 "execution": {
-        "PowerShell": {
-            "target": "$(currentDirectory)\\ExportToFile.ps1",
-            "workingDirectory": "$(currentDirectory)"
-        }
+    "PowerShell": {
+        "target": "$(currentDirectory)\\ExportToFile.ps1",
+        "workingDirectory": "$(currentDirectory)"
     }
+}
 ```
 
-- Run your script locally to confirm it's working
-- Build your VSTS task with `tfx extension create --manifest-globs vss-extension.json`
+- Run your script locally to confirm it's working.
+- Build your VSTS task with `tfx extension create --manifest-globs vss-extension.json`. It will compile to a .tfix file.
 - Publish your extension to VSTS. See [Microsoft HowTo](https://docs.microsoft.com/en-us/vsts/extend/publish/overview).
