@@ -1,4 +1,4 @@
-> Tasks to automate Dynamics 365 post-deployment steps
+> Tasks to automate Dynamics 365 post-deployment steps       [![Build Status](https://travis-ci.org/camelCaseDave/crm-vsts-tasks.svg?branch=master)](https://travis-ci.org/camelCaseDave/crm-vsts-tasks)
 
 ## 1. Tasks
 
